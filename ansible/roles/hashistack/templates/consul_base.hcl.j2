@@ -1,0 +1,19 @@
+# Managed by Ansible - Consul BASE CONFIG
+
+node_name = "{{ hashistack_node_name }}"
+datacenter = "{{ hashistack_datacenter }}"
+data_dir = "{{ consul_data_dir }}"
+
+bind_addr = "0.0.0.0"
+advertise_addr = "{{ hashistack_advertise_addr }}"
+client_addr = "{{ consul_client_addr }}"
+
+retry_join = [
+{% for node in hashistack_cluster_servers %}
+  "{{ node }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+]
+
+ports {
+  grpc = {{ consul_grpc_port }}
+}

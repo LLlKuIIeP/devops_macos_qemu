@@ -1,0 +1,36 @@
+---
+# Базовая директория (аналог $(pwd) в оригинальном скрипте)
+base_dir: "{{ playbook_dir }}/.."
+
+# Пути к директориям
+cloud_init_dir: "{{ base_dir }}/cloud-init"
+images_dir: "{{ base_dir }}/images"
+iso_dest: "{{ images_dir }}/cidata.iso"
+
+# --- Параметры виртуальной машины ---
+vm_hostname: "ubuntu-vm"
+vm_instance_id: "ubuntu-vm"
+
+# --- Параметры пользователя ---
+cloud_user: "user"
+# Хеш SHA-512 пароля (как в вашем скрипте)
+cloud_user_password_hash: "$6$P1IMS1N5ymXTJ9JW$jegH3CTfm7ze4SODSrIEf6GP9qUZVvhtx3qUhp.7x/DiMycszqXPoppDkEr/udMKkVEmCzx6C/HbEOa7glDEp/"
+
+# Список SSH-ключей (authorized_keys)
+ssh_authorized_keys:
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFaQ1E3d3O8M9BBc3PYXobv9NsC5GITIEnGr1fQk1DNA sergey@sergey-VivoBook"
+
+# Разрешить вход по паролю
+ssh_password_auth: true
+
+# Команды, выполняемые при первом запуске
+runcmd:
+  - 'echo "cloud-init finished" > /root/cloud-init-done'
+
+# --- Поведение ---
+# true — пересоздавать ISO при каждом запуске (как в bash-скрипте)
+# false — идемпотентно: пропускать, если ISO уже есть
+force_recreate: true
+
+# Метка тома ISO (noCloud требует "cidata")
+iso_volume_name: "cidata"

@@ -1,0 +1,61 @@
+---
+# Роль узла: 'server' или 'client'
+hashistack_node_role: "server"
+
+# Общие параметры кластера
+hashistack_datacenter: "dc1"
+hashistack_region: "global"
+
+# IP-адрес узла для advertise (обычно внутренний IP VDS)
+# Переопределяется в инвентаре для каждой ВМ
+hashistack_advertise_addr: "{{ ansible_default_ipv4.address | default('127.0.0.1') }}"
+
+# Сетевой интерфейс для Nomad client
+hashistack_network_interface: "eth0"
+
+# Класс узла (для Nomad node_class)
+hashistack_node_class: "general"
+
+# Имя ноды (по умолчанию inventory_hostname)
+hashistack_node_name: "{{ inventory_hostname }}"
+
+# Список адресов всех серверов кластера (для retry_join и advertise)
+hashistack_cluster_servers: []
+
+# Data directories
+consul_data_dir: "/var/lib/consul"
+nomad_data_dir: "/var/lib/nomad"
+
+# Consul
+consul_bootstrap_expect: 3
+consul_client_addr: "127.0.0.1"
+consul_grpc_port: 8502
+consul_ui_enabled: true
+
+# Nomad
+nomad_bootstrap_expect: 3
+nomad_client_enabled: true
+nomad_docker_volumes_enabled: true
+nomad_docker_allow_privileged: false
+
+# Firewall (UFW)
+hashistack_manage_firewall: true
+
+# Порты Consul
+consul_ports:
+  - { port: 8300, proto: tcp, comment: "Consul Server RPC" }
+  - { port: 8301, proto: tcp, comment: "Consul Serf LAN TCP" }
+  - { port: 8301, proto: udp, comment: "Consul Serf LAN UDP" }
+  - { port: 8302, proto: tcp, comment: "Consul Serf WAN TCP" }
+  - { port: 8302, proto: udp, comment: "Consul Serf WAN UDP" }
+  - { port: 8500, proto: tcp, comment: "Consul HTTP API" }
+  - { port: 8502, proto: tcp, comment: "Consul gRPC" }
+  - { port: 8600, proto: tcp, comment: "Consul DNS TCP" }
+  - { port: 8600, proto: udp, comment: "Consul DNS UDP" }
+
+# Порты Nomad
+nomad_ports:
+  - { port: 4646, proto: tcp, comment: "Nomad HTTP" }
+  - { port: 4647, proto: tcp, comment: "Nomad RPC" }
+  - { port: 4648, proto: tcp, comment: "Nomad Serf TCP" }
+  - { port: 4648, proto: udp, comment: "Nomad Serf UDP" }

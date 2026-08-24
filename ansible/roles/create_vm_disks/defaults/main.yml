@@ -1,0 +1,25 @@
+---
+# Директория, где лежат образы (аналог $(pwd) в скрипте)
+base_image_dir: "{{ playbook_dir }}/../images"
+
+# Имя базового cloud-образа
+base_image_name: "ubuntu-26.04-server-cloudimg-arm64.img"
+base_image_path: "{{ base_image_dir }}/{{ base_image_name }}"
+
+# Список виртуальных машин (аналог массива VMS)
+vm_names:
+  - ubuntu-1
+  - ubuntu-2
+  - ubuntu-3
+  - ubuntu-4
+
+# Формат диска
+disk_format: "qcow2"
+
+# Целевой размер диска
+target_disk_size: "40G"
+
+# Пересоздавать ли диски при каждом запуске (как в оригинальном bash-скрипте)?
+# true  — удаляет и создает заново (данные на дисках ВМ будут потеряны!)
+# false — создает только если файла нет (идемпотентный режим)
+force_recreate: false

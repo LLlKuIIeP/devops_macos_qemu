@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: abramov
+  description: Создание и подготовка qcow2 дисков для виртуальных машин
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: GenericLinux
+      versions:
+        - all
+  galaxy_tags:
+    - kvm
+    - qemu
+    - virtualization
+    - disks
+
+dependencies: []

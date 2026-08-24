@@ -1,0 +1,24 @@
+---
+- name: Проверить, что роль запускается на macOS
+  ansible.builtin.assert:
+    that:
+      - ansible_system | default('') == 'Darwin'
+    fail_msg: "Эта роль рассчитана на macOS с установленным Homebrew."
+    success_msg: "Система подходит для Homebrew."
+
+- name: Обновить Homebrew
+  community.general.homebrew:
+    update_homebrew: true
+  when: brew_update_homebrew | bool
+
+- name: Установить cask-пакеты через Homebrew
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: "{{ brew_state }}"
+  loop: "{{ brew_cask_packages }}"
+
+- name: Установить formula-пакеты через Homebrew
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: "{{ brew_state }}"
+  loop: "{{ brew_formula_packages }}"

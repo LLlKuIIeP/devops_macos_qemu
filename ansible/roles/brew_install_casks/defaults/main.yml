@@ -1,0 +1,11 @@
+---
+brew_cask_packages: []
+
+brew_formula_packages:
+  - qemu
+
+# present / absent / latest
+brew_state: present
+
+# Нужно ли делать `brew update` перед установкой
+brew_update_homebrew: true

@@ -1,0 +1,12 @@
+---
+# Выполнять: apt-get update --fix-missing
+apt_upgrade_fix_missing: true
+
+# Выполнять: apt full-upgrade
+apt_upgrade_full: true
+
+# Выполнять: apt-get autoremove --purge
+apt_upgrade_autoremove: true
+
+# Выполнять: apt-get clean
+apt_upgrade_clean: true

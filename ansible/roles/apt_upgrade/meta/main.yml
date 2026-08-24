@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: abramov
+  description: Обновление пакетов через apt update --fix-missing и apt full-upgrade
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - apt
+    - upgrade
+    - packages
+    - ubuntu
+    - debian
+
+dependencies: []

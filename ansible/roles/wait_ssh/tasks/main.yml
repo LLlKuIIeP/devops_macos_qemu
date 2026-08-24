@@ -1,0 +1,19 @@
+---
+- name: Wait for SSH port to be open
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host | default(inventory_hostname) }}"
+    port: "{{ ansible_port | default(22) }}"
+    state: started
+    timeout: "{{ wait_ssh_timeout }}"
+    delay: "{{ wait_ssh_delay }}"
+    sleep: "{{ wait_ssh_sleep }}"
+  delegate_to: localhost
+  become: false
+
+- name: Clear host errors
+  ansible.builtin.meta: clear_host_errors
+  when: wait_ssh_clear_host_errors | bool
+
+- name: Wait for SSH connection to be established
+  ansible.builtin.wait_for_connection:
+    timeout: "{{ wait_ssh_connection_timeout }}"

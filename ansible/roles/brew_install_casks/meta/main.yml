@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: abramov
+  description: Установка qemu и ansible через Homebrew
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - homebrew
+    - macos
+    - packaging
+    - brew
+
+dependencies: []

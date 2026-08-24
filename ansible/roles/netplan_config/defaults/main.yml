@@ -1,0 +1,19 @@
+---
+# Путь к конфигурационному файлу netplan
+netplan_config_file: /etc/netplan/50-cloud-init.yaml
+
+# Имена логических интерфейсов в конфиге
+netplan_ssh_interface: ssh-net
+netplan_mesh_interface: mesh-net
+
+# MAC-адреса и IP по умолчанию.
+# Для каждой ВМ их нужно переопределить.
+netplan_ssh_mac: "52:54:00:12:34:56"
+netplan_mesh_mac: "52:54:00:12:34:57"
+netplan_mesh_ip: "10.0.0.1/24"
+
+# Применять ли настройки сразу
+netplan_apply: true
+
+# Делать ли резервную копию старого конфига
+netplan_backup: false

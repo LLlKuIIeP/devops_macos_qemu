@@ -1,0 +1,32 @@
+---
+- name: Обновить кэш пакетов с --fix-missing
+  ansible.builtin.command:
+    cmd: apt-get update --fix-missing
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  become: true
+  changed_when: false
+  when: apt_upgrade_fix_missing | bool
+
+- name: Выполнить полный апгрейд пакетов (full-upgrade)
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: false
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  become: true
+  when: apt_upgrade_full | bool
+
+- name: Удалить ненужные пакеты
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+  become: true
+  when: apt_upgrade_autoremove | bool
+
+- name: Очистить кэш пакетов
+  ansible.builtin.command:
+    cmd: apt-get clean
+  become: true
+  changed_when: false
+  when: apt_upgrade_clean | bool

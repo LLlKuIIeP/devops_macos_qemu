@@ -1,0 +1,40 @@
+---
+- name: Проверить наличие базового cloud-образа
+  ansible.builtin.stat:
+    path: "{{ base_image_path }}"
+  register: base_image_stat
+
+- name: Прервать выполнение, если базовый образ не найден
+  ansible.builtin.fail:
+    msg: "Базовый образ '{{ base_image_path }}' не найден. Сначала скачайте его."
+  when: not base_image_stat.stat.exists
+
+- name: Удалить старые qcow2 диски (эквивалент rm -f)
+  ansible.builtin.file:
+    path: "{{ base_image_dir }}/{{ item }}.{{ disk_format }}"
+    state: absent
+  loop: "{{ vm_names }}"
+  when: force_recreate | bool
+
+- name: Создать qcow2 диски с использованием базового образа (backing file)
+  ansible.builtin.command:
+    cmd: >-
+      qemu-img create
+      -f {{ disk_format }}
+      -F {{ disk_format }}
+      -b "{{ base_image_path }}"
+      "{{ base_image_dir }}/{{ item }}.{{ disk_format }}"
+    # creates: гарантирует, что команда не выполнится, если файл уже существует
+    # (актуально, когда force_recreate: false)
+    creates: "{{ base_image_dir }}/{{ item }}.{{ disk_format }}"
+  loop: "{{ vm_names }}"
+
+- name: Увеличить размер qcow2 дисков
+  ansible.builtin.command:
+    cmd: >-
+      qemu-img resize
+      "{{ base_image_dir }}/{{ item }}.{{ disk_format }}"
+      {{ target_disk_size }}
+  loop: "{{ vm_names }}"
+  # qemu-img resize может выдавать ошибку, если пытаться уменьшить диск,
+  # но для увеличения (как в скрипте) она отработает корректно.

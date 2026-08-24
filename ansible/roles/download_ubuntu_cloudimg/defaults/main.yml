@@ -1,0 +1,17 @@
+---
+# Базовая директория, где создаются подпапки
+base_dir: "{{ playbook_dir }}/.."
+
+# Список директорий для создания
+directories_to_create:
+  - images
+  - cloud-init
+
+# URL образа Ubuntu
+ubuntu_cloudimg_url: "https://cloud-images.ubuntu.com/releases/resolute/release/ubuntu-26.04-server-cloudimg-arm64.img"
+
+# Куда сохранить образ
+ubuntu_cloudimg_dest: "{{ base_dir }}/images/ubuntu-26.04-server-cloudimg-arm64.img"
+
+# Права на директории
+directory_mode: "0755"

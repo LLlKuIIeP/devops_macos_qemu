@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: snabramov
+  description: Запуск нескольких QEMU ARM64 ВМ на macOS через HVF
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - qemu
+    - kvm
+    - hvf
+    - macos
+    - virtualization
+
+dependencies: []

@@ -1,0 +1,8 @@
+# Managed by Ansible - Consul SERVER SPECIFIC
+
+server = true
+bootstrap_expect = {{ consul_bootstrap_expect }}
+
+ui_config {
+  enabled = {{ consul_ui_enabled | lower }}
+}

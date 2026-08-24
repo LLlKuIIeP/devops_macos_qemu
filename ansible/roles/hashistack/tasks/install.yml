@@ -1,0 +1,42 @@
+---
+- name: Установить базовые зависимости
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gnupg2
+      - lsb-release
+      - apt-transport-https
+      - ca-certificates
+    state: present
+    update_cache: true
+  become: true
+
+- name: Получить GPG ключ HashiCorp
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -fsSL https://apt.releases.hashicorp.com/gpg \
+      | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    executable: /bin/bash
+  become: true
+
+- name: Создать файл репозитория HashiCorp
+  ansible.builtin.copy:
+    content: |
+      deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main
+    dest: /etc/apt/sources.list.d/hashicorp.list
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Установить Consul, Nomad и Docker
+  ansible.builtin.apt:
+    name:
+      - consul
+      - nomad
+      - docker.io
+    state: present
+    update_cache: true
+  become: true

@@ -1,0 +1,52 @@
+---
+- name: Создать директории Consul
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: consul
+    group: consul
+    mode: "0750"
+  loop:
+    - "{{ consul_data_dir }}"
+    - /etc/consul.d
+  become: true
+
+- name: Создать базовый конфиг Consul для сервера
+  ansible.builtin.template:
+    src: consul_base.hcl.j2
+    dest: /etc/consul.d/consul.hcl
+    owner: consul
+    group: consul
+    mode: "0640"
+  become: true
+  notify: Restart consul
+
+- name: Создать конфиг Consul для сервера
+  ansible.builtin.template:
+    src: consul_server.hcl.j2
+    dest: /etc/consul.d/server.hcl
+    owner: consul
+    group: consul
+    mode: "0640"
+  become: true
+  when: hashistack_consul_server is defined and hashistack_consul_server
+  notify: Restart consul
+
+- name: Создать конфиг Consul для клиента
+  ansible.builtin.template:
+    src: consul_client.hcl.j2
+    dest: /etc/consul.d/client.hcl
+    owner: consul
+    group: consul
+    mode: "0640"
+  become: true
+  when: hashistack_consul_client is defined and hashistack_consul_client
+  notify: Restart consul
+
+- name: Включить и запустить Consul
+  ansible.builtin.systemd:
+    name: consul
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true

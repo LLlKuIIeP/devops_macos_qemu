@@ -1,0 +1,116 @@
+---
+- name: Установка пакетов из brew-скрипта
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: false
+
+  tasks:
+    - name: Import the brew_install_casks role
+      ansible.builtin.import_role:
+        name: brew_install_casks
+      tags:
+        - init
+        - install
+
+    - name: Import the download_ubuntu_cloudimg role
+      ansible.builtin.import_role:
+        name: download_ubuntu_cloudimg
+      tags:
+        - init
+        - download
+
+    - name: Import the create_vm_disks role
+      ansible.builtin.import_role:
+        name: create_vm_disks
+      tags:
+        - init
+        - create_vm_disks
+
+    - name: Import the create_cloudinit_iso role
+      ansible.builtin.import_role:
+        name: create_cloudinit_iso
+      tags:
+        - init
+        - create_cloudinit_iso
+
+    - name: Import the create_ovmf_vars role
+      ansible.builtin.import_role:
+        name: create_ovmf_vars
+      tags:
+        - init
+        - create_ovmf_vars
+
+    - name: Import the qemu_vms role
+      ansible.builtin.import_role:
+        name: qemu_vms
+      tags:
+        - create_vms
+        - create_qemu_vms
+
+- name: Ждать доступности виртуальных машин по SSH
+  hosts: ubuntu_vms
+  gather_facts: false
+  ignore_unreachable: true
+  become: false
+
+  tasks:
+    - name: Import the wait_ssh role
+      ansible.builtin.import_role:
+        name: wait_ssh
+      tags:
+        - create_vms
+        - wait_ssh
+
+    - name: Import the apt_upgrade role
+      ansible.builtin.import_role:
+        name: apt_upgrade
+      tags:
+        - create_vms
+        - apt_upgrade
+
+    - name: Import the reboot_vm role
+      ansible.builtin.import_role:
+        name: reboot_vm
+      tags:
+        - create_vms
+        - reboot_vm
+
+- name: Сетевые настройки
+  hosts: ubuntu_vms
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Import the set_hostname role
+      ansible.builtin.import_role:
+        name: set_hostname
+      tags:
+        - create_vms
+        - set_hostname
+
+    - name: Import the netplan_config role
+      ansible.builtin.import_role:
+        name: netplan_config
+      tags:
+        - create_vms
+        - netplan
+
+    - name: Import the apt_upgrade role
+      ansible.builtin.import_role:
+        name: apt_upgrade
+      tags:
+        - create_vms
+        - apt_upgrade
+
+- name: Установка и настройка Consul + Nomad
+  hosts: ubuntu_vms
+  gather_facts: true
+  become: false
+
+  tasks:
+    - name: Import the hashistack role
+      ansible.builtin.import_role:
+        name: hashistack
+      tags:
+        - hashistack

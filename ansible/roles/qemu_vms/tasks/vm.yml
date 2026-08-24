@@ -1,0 +1,42 @@
+---
+- name: Проверить наличие файлов для {{ vm.name }}
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: vm_files_stat
+  loop:
+    - "{{ vm.disk }}"
+    - "{{ vm.cidata }}"
+    - "{{ vm.ovmf_vars }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Убедиться, что все необходимые файлы существуют
+  ansible.builtin.assert:
+    that:
+      - item.stat.exists
+    fail_msg: "Файл {{ item.item }} не найден для ВМ {{ vm.name }}"
+  loop: "{{ vm_files_stat.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Проверить, запущен ли уже QEMU для {{ vm.name }}
+  ansible.builtin.shell: >-
+    pgrep -f "qemu-system-aarch64.*-serial telnet::{{ vm.serial_port }}"
+  register: vm_process_check
+  changed_when: false
+  failed_when: false
+  become: "{{ qemu_become }}"
+
+- name: Создать скрипт запуска для {{ vm.name }}
+  ansible.builtin.template:
+    src: start_vm.sh.j2
+    dest: "{{ qemu_run_dir }}/start-{{ vm.name }}.sh"
+    mode: "0755"
+
+- name: Запустить QEMU для {{ vm.name }} в фоне
+  ansible.builtin.shell: |
+    nohup "{{ qemu_run_dir }}/start-{{ vm.name }}.sh" \
+      > "{{ qemu_log_dir }}/{{ vm.name }}.log" 2>&1 &
+    echo $! > "{{ qemu_run_dir }}/{{ vm.name }}.pid"
+  become: "{{ qemu_become }}"
+  when: vm_process_check.rc != 0

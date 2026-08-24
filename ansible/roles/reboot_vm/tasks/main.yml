@@ -1,0 +1,62 @@
+---
+- name: Проверить корректность режима
+  ansible.builtin.assert:
+    that:
+      - reboot_mode in ['always', 'if_required', 'never']
+    fail_msg: "reboot_mode должен быть 'always', 'if_required' или 'never'."
+
+- name: Проверить наличие файла reboot-required (Ubuntu/Debian)
+  ansible.builtin.stat:
+    path: "{{ reboot_required_file }}"
+  register: reboot_required_stat
+  become: true
+  when:
+    - reboot_mode == 'if_required'
+    - ansible_facts['os_family'] | default('') == 'Debian'
+
+- name: Определить, нужна ли перезагрузка
+  ansible.builtin.set_fact:
+    reboot_needed: >-
+      {{
+        (reboot_mode == 'always')
+        or
+        (reboot_mode == 'if_required' and reboot_required_stat.stat.exists | default(false))
+      }}
+
+- name: Показать содержимое reboot-required (если есть)
+  ansible.builtin.command:
+    cmd: cat {{ reboot_required_file }}
+  register: reboot_required_content
+  become: true
+  changed_when: false
+  failed_when: false
+  when:
+    - reboot_mode == 'if_required'
+    - reboot_required_stat.stat.exists | default(false)
+
+- name: Вывести причину перезагрузки
+  ansible.builtin.debug:
+    msg: >-
+      {% if reboot_mode == 'always' -%}
+      Перезагрузка: принудительно (reboot_mode=always)
+      {%- elif reboot_needed -%}
+      Перезагрузка требуется. Пакеты: {{ reboot_required_content.stdout_lines | default([]) }}
+      {%- else -%}
+      Перезагрузка не требуется.
+      {%- endif %}
+
+- name: Перезагрузить виртуальную машину и дождаться её возврата
+  ansible.builtin.reboot:
+    msg: "{{ reboot_message }}"
+    pre_reboot_delay: "{{ reboot_pre_delay }}"
+    post_reboot_delay: "{{ reboot_post_delay }}"
+    reboot_timeout: "{{ reboot_timeout }}"
+    connect_timeout: "{{ reboot_connect_timeout }}"
+    test_command: "{{ reboot_test_command }}"
+  become: true
+  when: reboot_needed | bool
+
+- name: Сообщение об успешной перезагрузке
+  ansible.builtin.debug:
+    msg: "{{ inventory_hostname }} успешно перезагружена."
+  when: reboot_needed | bool

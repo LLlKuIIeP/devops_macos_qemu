@@ -1,0 +1,19 @@
+# Managed by Ansible
+network:
+  version: 2
+  ethernets:
+    # Интерфейс от -netdev user (SSH)
+    {{ netplan_ssh_interface }}:
+      match:
+        macaddress: "{{ netplan_ssh_mac }}"
+      dhcp4: true
+      dhcp6: false
+
+    # Интерфейс для mesh / внутренней сети
+    {{ netplan_mesh_interface }}:
+      match:
+        macaddress: "{{ netplan_mesh_mac }}"
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - {{ netplan_mesh_ip }}

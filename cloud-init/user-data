@@ -1,0 +1,21 @@
+#cloud-config
+hostname: ubuntu-vm
+manage_etc_hosts: true
+
+users:
+  - name: user
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    lock_passwd: false
+    passwd: "$6$P1IMS1N5ymXTJ9JW$jegH3CTfm7ze4SODSrIEf6GP9qUZVvhtx3qUhp.7x/DiMycszqXPoppDkEr/udMKkVEmCzx6C/HbEOa7glDEp/"
+    ssh_authorized_keys:
+      - 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFaQ1E3d3O8M9BBc3PYXobv9NsC5GITIEnGr1fQk1DNA sergey@sergey-VivoBook'
+
+chpasswd:
+  expire: false
+
+ssh_pwauth: true
+
+runcmd:
+  - echo "cloud-init finished" > /root/cloud-init-done
