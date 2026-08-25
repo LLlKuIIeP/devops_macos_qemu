@@ -1,0 +1,17 @@
+---
+namespace: setevayos
+name: virtualization
+version: 1.0.0
+readme: README.md
+authors:
+  - abramov
+license:
+  - MIT
+description: Сущность виртуализации SetevayOS — образы, диски, cloud-init, OVMF и запуск QEMU ВМ на macOS
+tags:
+  - virtualization
+  - qemu
+  - kvm
+  - cloudinit
+  - macos
+dependencies: {}

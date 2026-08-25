@@ -1,0 +1,47 @@
+---
+- name: Проверить, что система - macOS
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] | default('') == 'Darwin'
+    fail_msg: "Эта роль предназначена для macOS с HVF и QEMU."
+    success_msg: "Система подходит."
+
+- name: Проверить наличие бинарника qemu-system-aarch64
+  ansible.builtin.stat:
+    path: "{{ qemu_binary }}"
+  register: qemu_binary_stat
+
+- name: Убедиться, что QEMU установлен
+  ansible.builtin.assert:
+    that:
+      - qemu_binary_stat.stat.exists
+    fail_msg: "Не найден бинарник QEMU: {{ qemu_binary }}"
+
+- name: Создать рабочие директории
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ qemu_run_dir }}"
+    - "{{ qemu_log_dir }}"
+
+- name: Создать файлы OVMF_VARS для каждой ВМ, если их нет
+  ansible.builtin.command:
+    cmd: >-
+      dd if=/dev/zero
+      of={{ item.ovmf_vars }}
+      bs=1m
+      count={{ qemu_ovmf_size_mb }}
+    creates: "{{ item.ovmf_vars }}"
+  loop: "{{ qemu_vms }}"
+  loop_control:
+    label: "{{ item.name }}"
+  become: "{{ qemu_become }}"
+
+- name: Запустить виртуальные машины
+  ansible.builtin.include_tasks: vm.yml
+  loop: "{{ qemu_vms }}"
+  loop_control:
+    loop_var: vm
+    label: "{{ vm.name }}"

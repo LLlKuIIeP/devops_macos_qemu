@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: abramov
+  description: Ожидание доступности виртуальных машин по SSH
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - wait
+    - ssh
+    - vm
+    - provisioning
+
+dependencies: []

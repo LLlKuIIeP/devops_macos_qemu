@@ -1,0 +1,18 @@
+---
+namespace: setevayos
+name: network
+version: 1.0.0
+readme: README.md
+authors:
+  - abramov
+license:
+  - MIT
+description: Сетевая сущность SetevayOS — настройка сети, идентификация узлов, доступность по SSH, пакеты хоста и ВМ
+tags:
+  - network
+  - netplan
+  - hostname
+  - ssh
+  - apt
+  - homebrew
+dependencies: {}

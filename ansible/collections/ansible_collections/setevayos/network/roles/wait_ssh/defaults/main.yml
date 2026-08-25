@@ -1,0 +1,15 @@
+---
+# Сколько секунд ждать появления порта
+wait_ssh_timeout: 300
+
+# Задержка перед началом проверки порта
+wait_ssh_delay: 5
+
+# Как часто проверять порт
+wait_ssh_sleep: 5
+
+# Сколько секунд ждать уже именно успешное SSH-подключение
+wait_ssh_connection_timeout: 120
+
+# Нужно ли сбрасывать состояние unreachable после ожидания
+wait_ssh_clear_host_errors: true

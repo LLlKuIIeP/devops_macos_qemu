@@ -1,0 +1,17 @@
+---
+namespace: setevayos
+name: services
+version: 1.0.0
+readme: README.md
+authors:
+  - abramov
+license:
+  - MIT
+description: Сущность сервисов SetevayOS — прикладные стеки (Consul, Nomad, Docker)
+tags:
+  - hashistack
+  - consul
+  - nomad
+  - docker
+  - cluster
+dependencies: {}

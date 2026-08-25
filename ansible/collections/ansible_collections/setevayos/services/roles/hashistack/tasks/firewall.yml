@@ -1,0 +1,47 @@
+---
+- name: Установить UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+    update_cache: true
+  become: true
+
+- name: Задать политики UFW по умолчанию
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: deny }
+    - { direction: outgoing, policy: allow }
+  become: true
+
+- name: Разрешить SSH
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+    comment: "SSH"
+  become: true
+
+- name: Разрешить порты Consul
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port | string }}"
+    proto: "{{ item.proto }}"
+    comment: "{{ item.comment }}"
+  loop: "{{ consul_ports }}"
+  become: true
+
+- name: Разрешить порты Nomad
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port | string }}"
+    proto: "{{ item.proto }}"
+    comment: "{{ item.comment }}"
+  loop: "{{ nomad_ports }}"
+  become: true
+
+- name: Включить UFW
+  community.general.ufw:
+    state: enabled
+  become: true

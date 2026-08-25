@@ -1,0 +1,25 @@
+# Managed by Ansible - Nomad CLIENT
+
+datacenter = "{{ hashistack_datacenter }}"
+region = "{{ hashistack_region }}"
+data_dir = "{{ nomad_data_dir }}"
+bind_addr = "0.0.0.0"
+
+client {
+  enabled = true
+  network_interface = "{{ hashistack_network_interface }}"
+  node_class = "{{ hashistack_node_class }}"
+}
+
+plugin "docker" {
+  config {
+    volumes {
+      enabled = {{ nomad_docker_volumes_enabled | lower }}
+    }
+    allow_privileged = {{ nomad_docker_allow_privileged | lower }}
+  }
+}
+
+consul {
+  address = "127.0.0.1:8500"
+}

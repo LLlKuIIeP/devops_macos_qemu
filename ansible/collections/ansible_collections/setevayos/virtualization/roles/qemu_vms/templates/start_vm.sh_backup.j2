@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Managed by Ansible
+# ВМ: {{ vm.name }}
+
+set -o errexit
+set -o nounset
+
+exec {{ qemu_binary }} \
+  -accel hvf \
+  -m {{ vm.memory_mb }} \
+  -cpu host \
+  -M virt \
+  -drive file={{ qemu_uefi_code }},if=pflash,format=raw,readonly=on \
+  -drive file={{ vm.ovmf_vars }},if=pflash,format=raw \
+  -serial telnet::{{ vm.serial_port }},server,nowait \
+  -drive if=none,file={{ vm.disk }},format=qcow2,id=hd0 \
+  -device virtio-blk-device,drive=hd0,bootindex=1 \
+  -device virtio-net-device,netdev=net0,mac={{ vm.mac_net0 }} \
+  -netdev user,id=net0,hostfwd=tcp::{{ vm.ssh_port }}-:22 \
+  -vga none \
+  -device ramfb \
+  -blockdev driver=file,node-name=cidata_file,filename={{ vm.cidata }},locking=off,read-only=on \
+  -blockdev driver=raw,node-name=cidata,file=cidata_file,read-only=on \
+  -device virtio-blk-device,drive=cidata,id=cidata_dev \
+  -netdev vmnet-host,id=net1,net-uuid={{ vm.net_uuid }} \
+  -device virtio-net-device,netdev=net1,mac={{ vm.mac_net1 }} \
+  -device qemu-xhci,id=xhci \
+  -device usb-kbd,bus=xhci.0 \
+  -device usb-mouse,bus=xhci.0 \
+  -monitor none

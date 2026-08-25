@@ -1,0 +1,34 @@
+---
+- name: Установить пакет netplan
+  ansible.builtin.package:
+    name: netplan.io
+    state: present
+  become: true
+
+- name: Создать конфигурацию netplan
+  ansible.builtin.template:
+    src: netplan.yaml.j2
+    dest: "{{ netplan_config_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+    backup: "{{ netplan_backup }}"
+  become: true
+  register: netplan_template_result
+
+- name: Проверить синтаксис конфигурации через netplan generate
+  ansible.builtin.command:
+    cmd: netplan generate
+  become: true
+  changed_when: false
+  when: netplan_template_result.changed
+
+- name: Применить настройки сети через netplan apply
+  ansible.builtin.command:
+    cmd: netplan apply
+  become: true
+  async: 60
+  poll: 0
+  when:
+    - netplan_apply | bool
+    - netplan_template_result.changed

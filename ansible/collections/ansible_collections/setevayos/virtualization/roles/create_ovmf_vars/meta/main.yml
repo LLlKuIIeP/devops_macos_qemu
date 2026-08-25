@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: snabramov
+  description: Создание файлов OVMF_VARS (UEFI variables) для QEMU/KVM
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: MacOSX
+      versions: [all]
+    - name: GenericLinux
+      versions: [all]
+  galaxy_tags:
+    - qemu
+    - kvm
+    - uefi
+    - ovmf
+
+dependencies: []

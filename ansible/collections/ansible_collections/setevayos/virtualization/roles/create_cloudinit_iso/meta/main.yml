@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: abramov
+  description: Создание cloud-init ISO образа для noCloud datasource
+  license: MIT
+  min_ansible_version: "2.12"
+  platforms:
+    - name: MacOSX
+      versions: [all]
+    - name: GenericLinux
+      versions: [all]
+  galaxy_tags:
+    - cloudinit
+    - kvm
+    - virtualization
+    - iso
+
+dependencies: []

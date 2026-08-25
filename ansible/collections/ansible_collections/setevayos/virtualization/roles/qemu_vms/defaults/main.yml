@@ -1,0 +1,66 @@
+---
+base_dir: "{{ playbook_dir }}/.."
+# Пути к QEMU и UEFI
+qemu_binary: /opt/homebrew/bin/qemu-system-aarch64
+qemu_uefi_code: /opt/homebrew/share/qemu/edk2-aarch64-code.fd
+
+# Базовая директория проекта
+qemu_base_dir: "{{ base_dir }}/qemu_vms"
+
+# Рабочие директории
+qemu_run_dir: "{{ qemu_base_dir }}/run"
+qemu_log_dir: "{{ qemu_base_dir }}/logs"
+
+# Запускать ли QEMU через sudo/become
+# для macOS с -accel hvf и -netdev vmnet-host обычно нужны права администратора
+qemu_become: true
+
+# Размер ovmf_vars.fd в МБ
+qemu_ovmf_size_mb: 64
+
+# Список виртуальных машин
+# Для каждой ВМ задаются уникальные параметры
+qemu_vms:
+  - name: ubuntu-1
+    memory_mb: 4096
+    disk: "{{ qemu_base_dir }}/../images/ubuntu-1.qcow2"
+    ovmf_vars: "{{ qemu_base_dir }}/../ovmf_vars/ovmf_vars_1.fd"
+    cidata: "{{ qemu_base_dir }}/../images/cidata.iso"
+    mac_net0: "52:54:00:12:34:56"
+    mac_net1: "52:54:00:12:34:57"
+    ssh_port: 2220
+    serial_port: 4444
+    net_uuid: "0a1b2c3d-4e5f-6789-abcd-ef0123456789"
+
+  - name: ubuntu-2
+    memory_mb: 4096
+    disk: "{{ qemu_base_dir }}/../images/ubuntu-2.qcow2"
+    ovmf_vars: "{{ qemu_base_dir }}/../ovmf_vars/ovmf_vars_2.fd"
+    cidata: "{{ qemu_base_dir }}/../images/cidata.iso"
+    mac_net0: "52:54:00:12:34:58"
+    mac_net1: "52:54:00:12:34:59"
+    ssh_port: 2221
+    serial_port: 4445
+    net_uuid: "0a1b2c3d-4e5f-6789-abcd-ef0123456789"
+
+  - name: ubuntu-3
+    memory_mb: 4096
+    disk: "{{ qemu_base_dir }}/../images/ubuntu-3.qcow2"
+    ovmf_vars: "{{ qemu_base_dir }}/../ovmf_vars/ovmf_vars_3.fd"
+    cidata: "{{ qemu_base_dir }}/../images/cidata.iso"
+    mac_net0: "52:54:00:12:34:5a"
+    mac_net1: "52:54:00:12:34:5b"
+    ssh_port: 2222
+    serial_port: 4446
+    net_uuid: "0a1b2c3d-4e5f-6789-abcd-ef0123456789"
+
+  - name: ubuntu-4
+    memory_mb: 4096
+    disk: "{{ qemu_base_dir }}/../images/ubuntu-4.qcow2"
+    ovmf_vars: "{{ qemu_base_dir }}/../ovmf_vars/ovmf_vars_4.fd"
+    cidata: "{{ qemu_base_dir }}/../images/cidata.iso"
+    mac_net0: "52:54:00:12:34:5c"
+    mac_net1: "52:54:00:12:34:5d"
+    ssh_port: 2223
+    serial_port: 4447
+    net_uuid: "0a1b2c3d-4e5f-6789-abcd-ef0123456789"

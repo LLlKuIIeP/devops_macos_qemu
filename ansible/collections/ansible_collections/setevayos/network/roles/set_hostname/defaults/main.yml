@@ -1,0 +1,24 @@
+---
+# Имя хоста для установки.
+# По умолчанию берётся inventory_hostname.
+hostname_name: "{{ inventory_hostname }}"
+
+# Полное доменное имя (FQDN). Если не задано — не используется.
+hostname_fqdn: ""
+
+# Обновлять ли /etc/hosts, чтобы hostname резолвился в 127.0.1.1.
+# Это избавляет от ошибки "sudo: unable to resolve host ..."
+hostname_update_hosts_file: true
+
+# IP, на который будет указывать hostname в /etc/hosts
+hostname_hosts_loopback: "127.0.1.1"
+
+# Защитить hostname от перезаписи через cloud-init
+hostname_preserve_cloud_init: true
+
+# Требуется ли перезагрузка после смены hostname
+# Обычно не нужна на современных Linux с systemd
+hostname_reboot: false
+
+# Таймаут ожидания после перезагрузки (сек)
+hostname_reboot_timeout: 600

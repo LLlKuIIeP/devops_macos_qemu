@@ -1,0 +1,76 @@
+---
+- name: Валидация — имя хоста задано
+  ansible.builtin.assert:
+    that:
+      - hostname_name is defined
+      - hostname_name | length > 0
+    fail_msg: "Не задано имя хоста. Передайте переменную hostname_name."
+
+- name: Установить hostname через системный модуль
+  ansible.builtin.hostname:
+    name: "{{ hostname_name }}"
+    use: systemd
+  become: true
+  register: hostname_change
+  when: ansible_facts['system'] | default('') in ['Linux', 'Darwin']
+
+- name: Обновить /etc/hostname напрямую (fallback для не-systemd систем)
+  ansible.builtin.copy:
+    content: "{{ hostname_name }}\n"
+    dest: /etc/hostname
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  when:
+    - ansible_facts['os_family'] | default('') in ['Debian', 'RedHat', 'Suse']
+    - hostname_change is skipped or hostname_change.failed | default(false)
+
+- name: Добавить hostname в /etc/hosts (избежать "unable to resolve host")
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^{{ hostname_hosts_loopback }}\s+'
+    line: "{{ hostname_hosts_loopback }}   {{ hostname_name }}{{ ' ' + hostname_fqdn if hostname_fqdn | length > 0 else '' }}"
+    state: present
+    backup: true
+  become: true
+  when:
+    - hostname_update_hosts_file | bool
+    - ansible_facts['system'] | default('') == 'Linux'
+
+- name: Запретить cloud-init перезаписывать hostname
+  ansible.builtin.lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regexp: '^preserve_hostname:'
+    line: "preserve_hostname: true"
+    state: present
+    backup: true
+  become: true
+  when:
+    - hostname_preserve_cloud_init | bool
+    - ansible_facts['os_family'] | default('') in ['Debian', 'RedHat']
+
+- name: Применить hostname в текущей сессии (Linux)
+  ansible.builtin.command:
+    cmd: hostname "{{ hostname_name }}"
+  become: true
+  changed_when: false
+  when:
+    - ansible_facts['system'] | default('') == 'Linux'
+
+- name: Применить hostname на macOS
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+  loop:
+    - "scutil --set HostName {{ hostname_name }}"
+    - "scutil --set LocalHostName {{ hostname_name }}"
+    - "scutil --set ComputerName {{ hostname_name }}"
+  become: true
+  changed_when: true
+  when: ansible_facts['system'] | default('') == 'Darwin'
+
+- name: Перезагрузить узел (если требуется)
+  ansible.builtin.reboot:
+    reboot_timeout: "{{ hostname_reboot_timeout }}"
+  become: true
+  when: hostname_reboot | bool

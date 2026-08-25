@@ -1,0 +1,63 @@
+---
+- name: Проверить поддерживаемую ОС
+  ansible.builtin.assert:
+    that:
+      - ansible_system in ['Darwin', 'Linux']
+    fail_msg: "Роль поддерживает только macOS и Linux."
+
+- name: Создать директорию cloud-init
+  ansible.builtin.file:
+    path: "{{ cloud_init_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Создать директорию images
+  ansible.builtin.file:
+    path: "{{ images_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Сгенерировать meta-data
+  ansible.builtin.template:
+    src: meta-data.j2
+    dest: "{{ cloud_init_dir }}/meta-data"
+    mode: "0644"
+
+- name: Сгенерировать user-data
+  ansible.builtin.template:
+    src: user-data.j2
+    dest: "{{ cloud_init_dir }}/user-data"
+    mode: "0644"
+
+- name: Удалить старый cidata.iso (эквивалент rm -f)
+  ansible.builtin.file:
+    path: "{{ iso_dest }}"
+    state: absent
+  when: force_recreate | bool
+
+# --- Создание ISO на macOS ---
+- name: Создать cidata.iso через hdiutil (macOS)
+  ansible.builtin.command:
+    cmd: >-
+      hdiutil makehybrid
+      -o "{{ iso_dest }}"
+      -iso
+      -joliet
+      -joliet-volume-name {{ iso_volume_name }}
+      -iso-volume-name {{ iso_volume_name }}
+      "{{ cloud_init_dir }}"
+    creates: "{{ iso_dest }}"
+  when: ansible_system == 'Darwin'
+
+# --- Создание ISO на Linux ---
+- name: Создать cidata.iso через genisoimage (Linux)
+  ansible.builtin.command:
+    cmd: >-
+      genisoimage
+      -output "{{ iso_dest }}"
+      -volid {{ iso_volume_name }}
+      -joliet
+      -rock
+      "{{ cloud_init_dir }}"
+    creates: "{{ iso_dest }}"
+  when: ansible_system == 'Linux'

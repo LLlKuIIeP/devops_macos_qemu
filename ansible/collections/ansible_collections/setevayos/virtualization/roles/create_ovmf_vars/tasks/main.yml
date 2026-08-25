@@ -1,0 +1,26 @@
+---
+- name: Создать директорию ovmf_vars
+  ansible.builtin.file:
+    path: "{{ ovmf_vars_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Проверить существование и размер файлов OVMF_VARS
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: ovmf_vars_stat
+  loop: "{{ ovmf_vars_files }}"
+
+- name: Создать/пересоздать файлы OVMF_VARS через dd
+  ansible.builtin.command:
+    cmd: >-
+      dd if=/dev/zero of={{ item.item }}
+      bs=1m count={{ ovmf_vars_size_mb }}
+    creates: "{{ item.item }}"
+  loop: "{{ ovmf_vars_stat.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: >
+    ovmf_vars_force | bool
+    or (not item.stat.exists)
+    or (item.stat.size | default(0) != (ovmf_vars_size_mb | int) * 1024 * 1024)

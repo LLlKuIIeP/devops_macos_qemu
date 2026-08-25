@@ -1,0 +1,18 @@
+---
+base_dir: "{{ playbook_dir }}/.."
+ovmf_vars_dir: "{{ base_dir }}/ovmf_vars"
+# Список файлов OVMF_VARS. Может быть один или несколько.
+# Пути можно менять под ваш проект.
+ovmf_vars_files:
+  - "{{ ovmf_vars_dir }}/ovmf_vars_1.fd"
+  - "{{ ovmf_vars_dir }}/ovmf_vars_2.fd"
+  - "{{ ovmf_vars_dir }}/ovmf_vars_3.fd"
+  - "{{ ovmf_vars_dir }}/ovmf_vars_4.fd"
+
+# Размер файла в мегабайтах (аналог count=64 при bs=1m)
+ovmf_vars_size_mb: 64
+
+# Принудительно пересоздавать файлы при каждом запуске
+# true  — всегда перезаписывает (как в оригинальном скрипте)
+# false — создаёт только если файла нет или размер неверный (идемпотентно)
+ovmf_vars_force: false

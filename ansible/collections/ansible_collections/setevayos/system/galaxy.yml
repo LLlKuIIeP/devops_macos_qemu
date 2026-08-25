@@ -1,0 +1,15 @@
+---
+namespace: setevayos
+name: system
+version: 1.0.0
+readme: README.md
+authors:
+  - abramov
+license:
+  - MIT
+description: Системная сущность SetevayOS — обслуживание ОС (перезагрузка ВМ)
+tags:
+  - system
+  - reboot
+  - maintenance
+dependencies: {}

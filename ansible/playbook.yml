@@ -8,42 +8,42 @@
   tasks:
     - name: Import the brew_install_casks role
       ansible.builtin.import_role:
-        name: brew_install_casks
+        name: setevayos.network.brew_install_casks
       tags:
         - init
         - install
 
     - name: Import the download_ubuntu_cloudimg role
       ansible.builtin.import_role:
-        name: download_ubuntu_cloudimg
+        name: setevayos.virtualization.download_ubuntu_cloudimg
       tags:
         - init
         - download
 
     - name: Import the create_vm_disks role
       ansible.builtin.import_role:
-        name: create_vm_disks
+        name: setevayos.virtualization.create_vm_disks
       tags:
         - init
         - create_vm_disks
 
     - name: Import the create_cloudinit_iso role
       ansible.builtin.import_role:
-        name: create_cloudinit_iso
+        name: setevayos.virtualization.create_cloudinit_iso
       tags:
         - init
         - create_cloudinit_iso
 
     - name: Import the create_ovmf_vars role
       ansible.builtin.import_role:
-        name: create_ovmf_vars
+        name: setevayos.virtualization.create_ovmf_vars
       tags:
         - init
         - create_ovmf_vars
 
     - name: Import the qemu_vms role
       ansible.builtin.import_role:
-        name: qemu_vms
+        name: setevayos.virtualization.qemu_vms
       tags:
         - create_vms
         - create_qemu_vms
@@ -57,21 +57,21 @@
   tasks:
     - name: Import the wait_ssh role
       ansible.builtin.import_role:
-        name: wait_ssh
+        name: setevayos.network.wait_ssh
       tags:
         - create_vms
         - wait_ssh
 
     - name: Import the apt_upgrade role
       ansible.builtin.import_role:
-        name: apt_upgrade
+        name: setevayos.network.apt_upgrade
       tags:
         - create_vms
         - apt_upgrade
 
     - name: Import the reboot_vm role
       ansible.builtin.import_role:
-        name: reboot_vm
+        name: setevayos.system.reboot_vm
       tags:
         - create_vms
         - reboot_vm
@@ -84,21 +84,21 @@
   tasks:
     - name: Import the set_hostname role
       ansible.builtin.import_role:
-        name: set_hostname
+        name: setevayos.network.set_hostname
       tags:
         - create_vms
         - set_hostname
 
     - name: Import the netplan_config role
       ansible.builtin.import_role:
-        name: netplan_config
+        name: setevayos.network.netplan_config
       tags:
         - create_vms
         - netplan
 
     - name: Import the apt_upgrade role
       ansible.builtin.import_role:
-        name: apt_upgrade
+        name: setevayos.network.apt_upgrade
       tags:
         - create_vms
         - apt_upgrade
@@ -111,6 +111,6 @@
   tasks:
     - name: Import the hashistack role
       ansible.builtin.import_role:
-        name: hashistack
+        name: setevayos.services.hashistack
       tags:
         - hashistack

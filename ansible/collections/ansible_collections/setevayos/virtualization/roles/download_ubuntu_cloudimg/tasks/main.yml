@@ -1,0 +1,15 @@
+---
+- name: Создать директории images и cloud-init
+  ansible.builtin.file:
+    path: "{{ base_dir }}/{{ item }}"
+    state: directory
+    mode: "{{ directory_mode }}"
+  loop: "{{ directories_to_create }}"
+
+- name: Скачать Ubuntu cloud image (без перезаписи существующего)
+  ansible.builtin.get_url:
+    url: "{{ ubuntu_cloudimg_url }}"
+    dest: "{{ ubuntu_cloudimg_dest }}"
+    mode: "0644"
+    force: no
+    timeout: 120

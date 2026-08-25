@@ -1,0 +1,48 @@
+---
+- name: Создать директории Nomad
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: "0750"
+  loop:
+    - "{{ nomad_data_dir }}"
+    - /etc/nomad.d
+  become: true
+
+- name: Удалить стандартный конфиг nomad.hcl (если есть)
+  ansible.builtin.file:
+    path: /etc/nomad.d/nomad.hcl
+    state: absent
+  become: true
+
+- name: Создать конфиг Nomad для сервера
+  ansible.builtin.template:
+    src: nomad_server.hcl.j2
+    dest: /etc/nomad.d/server.hcl
+    owner: nomad
+    group: nomad
+    mode: "0640"
+  become: true
+  when: hashistack_nomad_server is defined and hashistack_nomad_server
+  notify: Restart nomad
+
+- name: Создать конфиг Nomad для клиента
+  ansible.builtin.template:
+    src: nomad_client.hcl.j2
+    dest: /etc/nomad.d/client.hcl
+    owner: nomad
+    group: nomad
+    mode: "0640"
+  become: true
+  when: hashistack_nomad_client is defined and hashistack_nomad_client
+  notify: Restart nomad
+
+- name: Включить и запустить Nomad
+  ansible.builtin.systemd:
+    name: nomad
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true
