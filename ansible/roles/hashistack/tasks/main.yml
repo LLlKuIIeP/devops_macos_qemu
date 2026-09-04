@@ -1,13 +1,13 @@
 ---
-- name: Настроить firewall (UFW)
-  ansible.builtin.include_tasks: firewall.yml
-  when: hashistack_manage_firewall | bool
+# - name: Настроить firewall (UFW)
+#   ansible.builtin.include_tasks: firewall.yml
+#   when: hashistack_manage_firewall | bool
 
-- name: Установить Consul, Nomad и Docker
-  ansible.builtin.include_tasks: install.yml
+# - name: Установить Consul, Nomad и Docker
+#   ansible.builtin.include_tasks: install.yml
 
-- name: Настроить Docker для Nomad
-  ansible.builtin.include_tasks: docker.yml
+# - name: Настроить Docker для Nomad
+#   ansible.builtin.include_tasks: docker.yml
 
 - name: Настроить Consul
   ansible.builtin.include_tasks: consul.yml

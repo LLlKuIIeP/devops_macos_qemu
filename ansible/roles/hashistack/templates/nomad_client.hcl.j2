@@ -9,6 +9,11 @@ client {
   enabled = true
   network_interface = "{{ hashistack_network_interface }}"
   node_class = "{{ hashistack_node_class }}"
+  servers = [
+{% for node in hashistack_cluster_servers %}
+    "{{ node }}:4647"{% if not loop.last %},{% endif %}
+{% endfor %}
+  ]
 }
 
 plugin "docker" {
